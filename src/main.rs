@@ -45,7 +45,13 @@ fn main() -> amethyst::Result<()> {
                 .with_bindings_from_file(binding_path)?
         )?
         // pass system, name of system, and list of dependencies to run before our system
-        .with(systems::PaddleSystem, "paddle_system", &["input_system"]);
+        .with(systems::PaddleSystem, "paddle_system", &["input_system"])
+        .with(systems::MoveBallsSystem, "ball_system", &[])
+        .with(
+            systems::BounceSystem,
+            "collision_system",
+            &["paddle_system", "ball_system"],
+        );
 
     // combine our game state `Pong` with assets and game systems
     let mut game = Application::new(assets_dir, Pong, game_data)?;
