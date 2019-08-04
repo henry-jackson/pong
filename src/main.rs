@@ -1,5 +1,6 @@
 use amethyst::{
     core::TransformBundle,
+    input::{InputBundle, StringBindings},
     prelude::*,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
@@ -12,6 +13,8 @@ use amethyst::{
 mod pong;
 use crate::pong::Pong;
 
+mod systems;
+
 fn main() -> amethyst::Result<()> {
     // start logging system
     amethyst::start_logger(Default::default());
@@ -20,6 +23,7 @@ fn main() -> amethyst::Result<()> {
     let app_root = application_root_dir()?;
     let display_config_path = app_root.join("resources").join("display_config.ron");
     let assets_dir = app_root.join("assets");
+    let binding_path = app_root.join("resources").join("bindings.ron");
 
     // Create game data builder with required systems
     let game_data = GameDataBuilder::default()
@@ -35,7 +39,13 @@ fn main() -> amethyst::Result<()> {
         // transform bundle to handle entity positions
         .with_bundle(
             TransformBundle::new() 
-        )?;
+        )?
+        .with_bundle(
+            InputBundle::<StringBindings>::new()
+                .with_bindings_from_file(binding_path)?
+        )?
+        // pass system, name of system, and list of dependencies to run before our system
+        .with(systems::PaddleSystem, "paddle_system", &["input_system"]);
 
     // combine our game state `Pong` with assets and game systems
     let mut game = Application::new(assets_dir, Pong, game_data)?;
