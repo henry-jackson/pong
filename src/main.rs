@@ -1,4 +1,5 @@
 use amethyst::{
+    core::TransformBundle,
     prelude::*,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
@@ -8,10 +9,8 @@ use amethyst::{
     utils::application_root_dir,
 };
 
-// define our game state
-pub struct Pong;
-
-impl SimpleState for Pong {}
+mod pong;
+use crate::pong::Pong;
 
 fn main() -> amethyst::Result<()> {
     // start logging system
@@ -24,15 +23,19 @@ fn main() -> amethyst::Result<()> {
 
     // Create game data builder with required systems
     let game_data = GameDataBuilder::default()
-        // add rendering
+        // add rendering and window opening
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
                     RenderToWindow::from_config_path(display_config_path)
                         .with_clear([0.0, 0.0, 0.0, 1.0]), // RGBA values for display color
-                    )
+                )
                 .with_plugin(RenderFlat2D::default()),
-            )?;
+        )?
+        // transform bundle to handle entity positions
+        .with_bundle(
+            TransformBundle::new() 
+        )?;
 
     // combine our game state `Pong` with assets and game systems
     let mut game = Application::new(assets_dir, Pong, game_data)?;
