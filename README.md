@@ -2,6 +2,7 @@
 
 ## How to run
 
+Requires rust and cargo on your machine.
 To run the game, use
 
 ```
